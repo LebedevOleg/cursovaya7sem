@@ -106,7 +106,7 @@ const RegisterModal = () => {
       {state && (
         <>
           {login ? (
-            <div>
+            <div style={{ position: "static", zIndex: 100000 }}>
               <div id={stlLogin.login}>
                 <h1>Форма входа</h1>
                 <fieldset id={stlLogin.inputs}>

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import axios from "axios";
 
 const storageName = "userData";
 
@@ -42,5 +43,13 @@ export const useAuth = () => {
     setReady(true);
   }, [login]);
 
-  return { login, logout, token, userId, userLogin, ready, isAdmin };
+  return {
+    login,
+    logout,
+    token,
+    userId,
+    userLogin,
+    ready,
+    isAdmin,
+  };
 };

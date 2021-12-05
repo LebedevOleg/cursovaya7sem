@@ -8,7 +8,17 @@ import { useRoutes } from "./routes";
 import { AuthContext } from "./context/authContext";
 
 function App() {
-  const { token, login, logout, userId, userLogin, ready, isAdmin } = useAuth();
+  const {
+    token,
+    login,
+    logout,
+    userId,
+    userLogin,
+    ready,
+    isAdmin,
+    getFirstName,
+    getLastName,
+  } = useAuth();
   const routes = useRoutes();
   const isAuthent = !!token;
 
@@ -28,7 +38,7 @@ function App() {
         <nav className="nav-menu">
           <ul className="nav-menu__row right hide-on-med-and-down">
             <li className="nav-menu__row_items">
-              <a href="#" className="nav-menu__row_items_a">
+              <a href="/rooms" className="nav-menu__row_items_a">
                 <b>Заказать Номер</b>
               </a>
             </li>
