@@ -6,7 +6,7 @@ import "./modal.css";
 import { AuthContext } from "../context/authContext";
 import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
 
-export const ReservateRoomModal = () => {
+export const ReservateRoomModal = (id) => {
   const getFirstName = async (id) => {
     var result = "";
     if (id == null) {
@@ -53,7 +53,7 @@ export const ReservateRoomModal = () => {
   const handleChangeDateEnd = (event) => {
     setDateEnd(event.value);
   };
-
+console.log(id)
   const [formReg, setFormReg] = useState({
     login: "",
     password: "",
@@ -61,6 +61,8 @@ export const ReservateRoomModal = () => {
     last_name: "",
     date_Start: new Date(),
     date_End: new Date(),
+    token: token.token,
+    room_id: id.id,    
   });
   const changeRegFormHandler = (event) => {
     setFormReg({ ...formReg, [event.target.name]: event.target.value });
@@ -69,6 +71,7 @@ export const ReservateRoomModal = () => {
   const regRoomHandler = () => {
     setFormReg({ ...formReg, date_Start: dateStart });
     setFormReg({ ...formReg, date_End: dateEnd });
+    await axios.post("",{...formReg}).then()
   };
 
   return (
