@@ -75,7 +75,8 @@ const RegisterModal = () => {
         authCheck.data.userLogin,
         authCheck.data.IsAdmin
       );
-      window.location = "/account";
+      console.log(authCheck.data.token);
+      //window.location = "/account";
     } catch (e) {
       console.log(e);
     }

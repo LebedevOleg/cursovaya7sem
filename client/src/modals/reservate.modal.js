@@ -4,9 +4,14 @@ import { useMessage } from "../hooks/alert.hook";
 
 import "./modal.css";
 import { AuthContext } from "../context/authContext";
-import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
+import {
+  DatePickerComponent,
+  DateTimePickerComponent,
+  RenderDayCellEventArgs,
+} from "@syncfusion/ej2-react-calendars";
 
-export const ReservateRoomModal = (id) => {
+export const ReservateRoomModal = (room) => {
+  const [enableButton, setEnubleButton] = useState(false);
   const getFirstName = async (id) => {
     var result = "";
     if (id == null) {
@@ -33,7 +38,7 @@ export const ReservateRoomModal = (id) => {
       return result;
     }
   };
-
+  const alert = useMessage();
   const token = useContext(AuthContext);
   const [state, setState] = useState(false);
   const [dateStart, setDateStart] = useState(new Date());
@@ -48,12 +53,14 @@ export const ReservateRoomModal = (id) => {
   });
 
   const handleChangeDateStart = (event) => {
-    setDateStart(event.value);
+    console.log(event);
+    setFormReg({ ...formReg, [event.element.name]: event.element.value });
+    setDateStart(event.element.value);
   };
   const handleChangeDateEnd = (event) => {
-    setDateEnd(event.value);
+    setFormReg({ ...formReg, [event.element.name]: event.element.value });
+    setDateEnd(event.element.value);
   };
-console.log(id)
   const [formReg, setFormReg] = useState({
     login: "",
     password: "",
@@ -62,16 +69,39 @@ console.log(id)
     date_Start: new Date(),
     date_End: new Date(),
     token: token.token,
-    room_id: id.id,    
+    room_id: room.id.id,
+    dayPrice: room.id.price_for_day,
   });
   const changeRegFormHandler = (event) => {
     setFormReg({ ...formReg, [event.target.name]: event.target.value });
   };
 
-  const regRoomHandler = () => {
-    setFormReg({ ...formReg, date_Start: dateStart });
-    setFormReg({ ...formReg, date_End: dateEnd });
-    await axios.post("",{...formReg}).then()
+  const regRoomHandler = async () => {
+    /* setFormReg({ ...formReg, date_Start: dateStart });
+    setFormReg({ ...formReg, date_End: dateEnd }); */
+    console.debug(formReg);
+    await axios
+      .post("/api/rooms/resrveRoom", { ...formReg })
+      .then((res) => {
+        alert("Комната успешно забронированна");
+        setState(false);
+      })
+      .catch((error) => {
+        if (error.response) {
+          alert(error.response.data.message.errors[0].msg);
+        } else if (error.request) {
+          alert(error.response.data.message.errors[0].msg);
+        }
+      });
+  };
+  const enabledButton = () => {
+    if (dateStart == dateEnd) {
+      setEnubleButton(true);
+      return true;
+    } else {
+      setEnubleButton(false);
+      return false;
+    }
   };
 
   return (
@@ -93,21 +123,26 @@ console.log(id)
               <div className="col s12 m6 ">
                 Дата начала заезда
                 <DateTimePickerComponent
+                  name="date_Start"
                   placeholder="Дата начала импорта"
                   format="yyyy/MM/dd HH:mm"
-                  min={new Date(Date.now())}
-                  onChange={handleChangeDateStart}
-                  style={{ width: "auto" }}
+                  min={
+                    // !!!!!!! СУКА БЛЯТЬ ЕБАНЫЙ РОТ СИЖУ 20 МИНУТ ЭТА ХУЙНЯ ПОДЗАЛУПНАЯ НЕ РАБОТАЕТ ЕБАЛ РОТ СОЗДАТЕЛЯ ЭТОЙ ХУЙНИ
+
+                    new Date(Date.now())
+                  }
+                  change={handleChangeDateStart}
                 ></DateTimePickerComponent>
               </div>
               <div className="col s12 m6 ">
                 Дата конца заезда
                 <DateTimePickerComponent
+                  name="date_End"
                   placeholder="Дата конца импорта"
                   format="yyyy/MM/dd HH:mm"
-                  min={new Date(Date.now())}
-                  onChange={handleChangeDateEnd}
-                  style={{ width: "auto" }}
+                  min={new Date()}
+                  change={handleChangeDateEnd}
+                  req
                 ></DateTimePickerComponent>
               </div>
             </div>
@@ -116,26 +151,25 @@ console.log(id)
                 <input
                   name="first_name"
                   type="first_name"
-                  value={(!!token.token && firstName) || ""}
-                  placeholder="Имя"
+                  placeholder={(!!token.token && firstName) || "Имя"}
                   autoFocus="true"
+                  onLoad={changeRegFormHandler}
                   onChange={changeRegFormHandler}
                   required
                 />
                 <input
                   name="last_name"
                   type="last_name"
-                  value={(!!token.token && lastName) || ""}
-                  placeholder="Фамилия"
-                  autoFocus="true"
+                  placeholder={(!!token.token && lastName) || "Фамилия"}
+                  onLoad={changeRegFormHandler}
                   onChange={changeRegFormHandler}
                   required
                 />
                 <input
                   name="login"
                   type="text"
-                  value={(!!token.token && token.userLogin) || ""}
-                  placeholder="Логин"
+                  placeholder={(!!token.token && token.userLogin) || "Логин"}
+                  onLoadStart={changeRegFormHandler}
                   onChange={changeRegFormHandler}
                   required
                 />
@@ -147,7 +181,9 @@ console.log(id)
                   required
                 />
                 <div>
-                  <button onClick={() => {}}>Зарезервировать Комнату</button>
+                  <button onClick={regRoomHandler}>
+                    Зарезервировать Комнату
+                  </button>
                 </div>
               </fieldset>
             </div>

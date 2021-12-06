@@ -12,7 +12,7 @@ export const BlockRooms = (room) => {
               <p>Размер комнаты: {room.room.size} человека</p>
             </div>
             <div className="card-action">
-              <ReservateRoomModal id = {room.room.id, room.room.price_of_day} />
+              <ReservateRoomModal id={room.room} />
             </div>
           </div>
         </div>
