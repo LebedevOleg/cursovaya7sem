@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect } from "react";
-import axios from "axios";
 
 const storageName = "userData";
 
@@ -15,6 +14,7 @@ export const useAuth = () => {
     setToken(megaToken);
     setUserLogin(name);
     setIsAdmin(admin);
+
     localStorage.setItem(
       storageName,
       JSON.stringify({
@@ -31,6 +31,7 @@ export const useAuth = () => {
     setUserId(null);
     setUserLogin(null);
     setIsAdmin(null);
+
     localStorage.removeItem(storageName);
   }, []);
 

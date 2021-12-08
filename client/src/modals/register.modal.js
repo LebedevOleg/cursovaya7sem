@@ -1,11 +1,12 @@
 import axios from "axios";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import stlLogin from "./AuthPage.module.css";
 import stlReg from "./RegisterPage.module.css";
 import { useMessage } from "../hooks/alert.hook";
 
 import "./modal.css";
 import { AuthContext } from "../context/authContext";
+import AddMoneyModal from "./AddMoney.modal";
 
 const RegisterModal = () => {
   //#region modal constant
@@ -14,6 +15,7 @@ const RegisterModal = () => {
   const changeRegFormHandler = (event) => {
     setFormReg({ ...formReg, [event.target.name]: event.target.value });
   };
+  const [money, setMoney] = useState(0);
   const changeLoginFormHandler = (event) => {
     setFormLogin({ ...formLogin, [event.target.name]: event.target.value });
   };
@@ -58,7 +60,6 @@ const RegisterModal = () => {
     }
   };
   const authHandler = async () => {
-    const message = "";
     try {
       const authCheck = await axios
         .post("/api/auth/login", { ...formLogin })
@@ -76,18 +77,34 @@ const RegisterModal = () => {
         authCheck.data.IsAdmin
       );
       console.log(authCheck.data.token);
-      //window.location = "/account";
+      window.location = "/account";
     } catch (e) {
       console.log(e);
     }
   };
+  const getUserMoney = useCallback(async () => {
+    await axios
+      .get("/api/user/getUserMoney", {
+        headers: { Authorization: `Bearer ${auth.token}` },
+      })
+      .then(async (res) => {
+        setMoney(res.data.cash);
+      });
+  }, []);
 
+  useEffect(() => {
+    getUserMoney();
+  }, [getUserMoney]);
   return (
     <React.Fragment>
       {(token && (
-        <a href="/account" className="nav-menu__row_items_a">
-          <b>Аккаунт</b>
-        </a>
+        <div className="row">
+          <a href="/account" className="nav-menu__row_items_a">
+            <b>
+              {auth.userLogin} счет: {money}
+            </b>
+          </a>
+        </div>
       )) || (
         <a
           onClick={() => {

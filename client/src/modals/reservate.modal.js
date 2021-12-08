@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import { useMessage } from "../hooks/alert.hook";
 
 import "./modal.css";
@@ -9,10 +9,11 @@ import {
   DateTimePickerComponent,
   RenderDayCellEventArgs,
 } from "@syncfusion/ej2-react-calendars";
+import { DateTimeSelect } from "../components/DatePicker";
 
 export const ReservateRoomModal = (room) => {
   const [enableButton, setEnubleButton] = useState(false);
-  const getFirstName = async (id) => {
+  const getFirstName = useCallback(async (id) => {
     var result = "";
     if (id == null) {
       return null;
@@ -24,8 +25,8 @@ export const ReservateRoomModal = (room) => {
         });
       return result;
     }
-  };
-  const getLastName = async (id) => {
+  }, []);
+  const getLastName = useCallback(async (id) => {
     var result = "";
     if (id == null) {
       return null;
@@ -37,7 +38,7 @@ export const ReservateRoomModal = (room) => {
         });
       return result;
     }
-  };
+  }, []);
   const alert = useMessage();
   const token = useContext(AuthContext);
   const [state, setState] = useState(false);
@@ -45,15 +46,14 @@ export const ReservateRoomModal = (room) => {
   const [dateEnd, setDateEnd] = useState(new Date());
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  getLastName(token.userId).then((value) => {
-    setLastName(value);
-  });
-  getFirstName(token.userId).then((value) => {
-    setFirstName(value);
-  });
+  const [load, setload] = useState(false);
+
+  useEffect(() => {
+    setLastName(getLastName(token.userId));
+    setFirstName(getFirstName(token.userId));
+  }, [setLastName, setFirstName]);
 
   const handleChangeDateStart = (event) => {
-    console.log(event);
     setFormReg({ ...formReg, [event.element.name]: event.element.value });
     setDateStart(event.element.value);
   };
@@ -77,19 +77,33 @@ export const ReservateRoomModal = (room) => {
   };
 
   const regRoomHandler = async () => {
-    /* setFormReg({ ...formReg, date_Start: dateStart });
-    setFormReg({ ...formReg, date_End: dateEnd }); */
-    console.debug(formReg);
+    setload(true);
+    if (room.date.length != 0) {
+      for (var i = 0; i < room.date.length; i++) {
+        var dateInRes = new Date(room.date[i].date_on);
+        var dateOutRes = new Date(room.date[i].date_out);
+        var dateInChoose = new Date(formReg.date_Start);
+        var dateOutChoose = new Date(formReg.date_End);
+        if (dateInRes > dateInChoose && dateOutRes < dateOutChoose) {
+          return alert("Выбранный промежуток пересекает уже существующий");
+        }
+      }
+    }
+
     await axios
       .post("/api/rooms/resrveRoom", { ...formReg })
       .then((res) => {
         alert("Комната успешно забронированна");
+        setload(false);
         setState(false);
+        window.location = "/rooms";
       })
       .catch((error) => {
         if (error.response) {
+          setload(false);
           alert(error.response.data.message.errors[0].msg);
         } else if (error.request) {
+          setload(false);
           alert(error.response.data.message.errors[0].msg);
         }
       });
@@ -101,6 +115,39 @@ export const ReservateRoomModal = (room) => {
     } else {
       setEnubleButton(false);
       return false;
+    }
+  };
+
+  const onRenderCellStart = (args) => {
+    if (room.date.length != 0) {
+      for (var i = 0; i < room.date.length; i++) {
+        var dateIn = new Date(room.date[i].date_on);
+        var dateOut = new Date(room.date[i].date_out);
+        if (
+          args.date.getDate() >= dateIn.getDate() &&
+          args.date.getDate() <= dateOut.getDate()
+        ) {
+          args.isDisabled = true;
+        }
+      }
+    }
+  };
+  const onRenderCellEnd = (args) => {
+    if (room.date.length != 0) {
+      for (var i = 0; i < room.date.length; i++) {
+        var dateIn = new Date(room.date[i].date_on);
+        var dateOut = new Date(room.date[i].date_out);
+        if (
+          args.date.getDate() >= dateIn.getDate() &&
+          args.date.getDate() <= dateOut.getDate()
+        ) {
+          args.isDisabled = true;
+        }
+      }
+    }
+    var date = new Date(dateStart);
+    if (args.date.getDate() <= date.getDate()) {
+      args.isDisabled = true;
     }
   };
 
@@ -118,87 +165,114 @@ export const ReservateRoomModal = (room) => {
       {state && (
         <div className="modal">
           <div className="modal-body">
-            <h1>Бронирование номера</h1>
-            <div className="row">
-              <div className="col s12 m6 ">
-                Дата начала заезда
-                <DateTimePickerComponent
-                  name="date_Start"
-                  placeholder="Дата начала импорта"
-                  format="yyyy/MM/dd HH:mm"
-                  min={
-                    // !!!!!!! СУКА БЛЯТЬ ЕБАНЫЙ РОТ СИЖУ 20 МИНУТ ЭТА ХУЙНЯ ПОДЗАЛУПНАЯ НЕ РАБОТАЕТ ЕБАЛ РОТ СОЗДАТЕЛЯ ЭТОЙ ХУЙНИ
-
-                    new Date(Date.now())
-                  }
-                  change={handleChangeDateStart}
-                ></DateTimePickerComponent>
-              </div>
-              <div className="col s12 m6 ">
-                Дата конца заезда
-                <DateTimePickerComponent
-                  name="date_End"
-                  placeholder="Дата конца импорта"
-                  format="yyyy/MM/dd HH:mm"
-                  min={new Date()}
-                  change={handleChangeDateEnd}
-                  req
-                ></DateTimePickerComponent>
-              </div>
-            </div>
-            <div>
-              <fieldset>
-                <input
-                  name="first_name"
-                  type="first_name"
-                  placeholder={(!!token.token && firstName) || "Имя"}
-                  autoFocus="true"
-                  onLoad={changeRegFormHandler}
-                  onChange={changeRegFormHandler}
-                  required
-                />
-                <input
-                  name="last_name"
-                  type="last_name"
-                  placeholder={(!!token.token && lastName) || "Фамилия"}
-                  onLoad={changeRegFormHandler}
-                  onChange={changeRegFormHandler}
-                  required
-                />
-                <input
-                  name="login"
-                  type="text"
-                  placeholder={(!!token.token && token.userLogin) || "Логин"}
-                  onLoadStart={changeRegFormHandler}
-                  onChange={changeRegFormHandler}
-                  required
-                />
-                <input
-                  name="password"
-                  type="password"
-                  placeholder="Пароль"
-                  onChange={changeRegFormHandler}
-                  required
-                />
-                <div>
-                  <button onClick={regRoomHandler}>
-                    Зарезервировать Комнату
-                  </button>
+            {(!load && (
+              <div>
+                <h1>Бронирование номера</h1>
+                <div className="row">
+                  <div className="col s12 m6 ">
+                    Дата начала заезда
+                    <DateTimePickerComponent
+                      name="date_Start"
+                      placeholder="Дата начала импорта"
+                      format="yyyy/MM/dd HH:mm"
+                      min={new Date(Date.now())}
+                      renderDayCell={onRenderCellStart}
+                      change={handleChangeDateStart}
+                    ></DateTimePickerComponent>
+                  </div>
+                  <div className="col s12 m6 ">
+                    Дата конца заезда
+                    <DateTimePickerComponent
+                      name="date_End"
+                      placeholder="Дата конца импорта"
+                      format="yyyy/MM/dd HH:mm"
+                      min={new Date()}
+                      renderDayCell={onRenderCellEnd}
+                      change={handleChangeDateEnd}
+                      req
+                    ></DateTimePickerComponent>
+                  </div>
                 </div>
-              </fieldset>
-            </div>
+                <div>
+                  <fieldset>
+                    <input
+                      name="first_name"
+                      type="first_name"
+                      placeholder={(!!token.token && firstName) || "Имя"}
+                      autoFocus="true"
+                      onLoad={changeRegFormHandler}
+                      onChange={changeRegFormHandler}
+                      required
+                    />
+                    <input
+                      name="last_name"
+                      type="last_name"
+                      placeholder={(!!token.token && lastName) || "Фамилия"}
+                      onLoad={changeRegFormHandler}
+                      onChange={changeRegFormHandler}
+                      required
+                    />
+                    <input
+                      name="login"
+                      type="text"
+                      placeholder={
+                        (!!token.token && token.userLogin) || "Логин"
+                      }
+                      onLoadStart={changeRegFormHandler}
+                      onChange={changeRegFormHandler}
+                      required
+                    />
+                    <input
+                      name="password"
+                      type="password"
+                      placeholder="Пароль"
+                      onChange={changeRegFormHandler}
+                      required
+                    />
+                    <div>
+                      <button onClick={regRoomHandler}>
+                        Зарезервировать Комнату
+                      </button>
+                    </div>
+                  </fieldset>
 
-            <button
-              onClick={() => {
-                setState(false);
-              }}
-            >
-              Закрыть окно
-            </button>
+                  <p>
+                    Цена за день снятия этого номера {room.id.price_for_day}{" "}
+                    условных единиц
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setState(false);
+                    setDateEnd(new Date());
+                    setDateStart(new Date());
+                  }}
+                >
+                  Закрыть окно
+                </button>
+              </div>
+            )) || (
+              <div style={{ textAlign: "center", margin: "2rem 0" }}>
+                <div class="preloader-wrapper active">
+                  <div class="spinner-layer spinner-red-only">
+                    <div class="circle-clipper left">
+                      <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                      <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                      <div class="circle"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
     </React.Fragment>
   );
 };
+
 export default ReservateRoomModal;

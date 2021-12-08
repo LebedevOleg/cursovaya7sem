@@ -6,26 +6,60 @@ const router = new Router();
 const db = require("../db");
 const { check, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
+const auth = require("../middleware/auth.middleware");
 
 // * /api/rooms/getFreeRooms
 router.get("/getFreeRooms", async (req, res) => {
   try {
     const rooms = await db.query("SELECT * FROM rooms order by id");
-    res.json(rooms.rows);
+    res.status(201).json(rooms.rows);
   } catch (e) {
     console.log(e.message);
+  }
+});
+// * /api/rooms/getRoomReservDate
+router.post("/getRoomReservDate", async (req, res) => {
+  try {
+    const { id } = req.body;
+    const date = await db.query(
+      "SELECT orders.date_on, orders.date_out FROM rooms, orders where orders.room_id  = rooms.id and rooms.id = $1",
+      [id]
+    );
+    if (date.rowCount == 0) {
+      return res.json([]);
+    }
+    return res.status(201).json(date.rows);
+  } catch (e) {
+    res.json(e.message);
   }
 });
 
 router.post("/getFreeRoomsFilter", async (req, res) => {
   try {
-    const { value } = req.body;
-    console.log(value);
-    const rooms = await db.query(
-      "SELECT * FROM rooms where size = $1 order by id",
-      [value]
-    );
-    res.json(rooms.rows);
+    if (!!req.body.build) {
+      if (!!req.body.value) {
+        const { value, build } = req.body;
+        const rooms = await db.query(
+          "SELECT rooms.* FROM rooms left join build_to_rooms on rooms.id = build_to_rooms.room_id left join buildings on build_to_rooms.build_id = buildings.id where rooms.size = $1 and buildings.name =$2 order by id",
+          [value, build]
+        );
+        return res.status(201).json(rooms.rows);
+      } else {
+        const { build } = req.body;
+        const rooms = await db.query(
+          "SELECT rooms.* FROM rooms left join build_to_rooms on rooms.id = build_to_rooms.room_id left join buildings on build_to_rooms.build_id = buildings.id where and buildings.name =$1 order by id",
+          [build]
+        );
+        return res.status(201).json(rooms.rows);
+      }
+    } else {
+      const { value } = req.body;
+      const rooms = await db.query(
+        "SELECT * FROM rooms where size = $1 order by id",
+        [value]
+      );
+      return res.status(201).json(rooms.rows);
+    }
   } catch (e) {
     console.log(e.message);
   }
@@ -75,15 +109,15 @@ router.post(
         const cost1 =
           userMoney.rows[0].cash -
           dayPrice * ((new Date(date_End) - new Date(date_Start)) / 86400000);
-        console.log(userMoney.rows[0].cash);
         await db.query("UPDATE public.users set cash=$1 WHERE id = $2", [
           cost1,
           users.rows[0].id,
         ]);
-        console.log(typeof users.rows[0].id);
+        const price =
+          dayPrice * ((new Date(date_End) - new Date(date_Start)) / 86400000);
         await db.query(
-          "INSERT INTO orders(user_id, room_id, date_on, date_out) VALUES ( $1, $2, $3, $4)",
-          [users.rows[0].id, room_id, date_Start, date_End]
+          "INSERT INTO orders(user_id, room_id, date_on, date_out,price) VALUES ( $1, $2, $3, $4,$5)",
+          [users.rows[0].id, room_id, date_Start, date_End, price]
         );
         return res
           .status(201)
@@ -105,9 +139,11 @@ router.post(
           cost2,
           newPerson.rows[0].id,
         ]);
+        const price =
+          dayPrice * ((new Date(date_End) - new Date(date_Start)) / 86400000);
         await db.query(
-          "INSERT INTO orders(user_id, room_id, date_on, date_out) VALUES ( $1, $2, $3, $4)",
-          [newPerson.rows[0].id, room_id, date_Start, date_End]
+          "INSERT INTO orders(user_id, room_id, date_on, date_out,price) VALUES ( $1, $2, $3, $4,$5)",
+          [newPerson.rows[0].id, room_id, date_Start, date_End, price]
         );
         return res
           .status(201)
@@ -119,5 +155,30 @@ router.post(
     }
   }
 );
+// * /api/rooms/deleteOrder
+router.post("/deleteOrder", auth, async (req, res) => {
+  const userId = req.userAuth.userId;
+  if (!!req.body.uID) {
+    var { id, price, uID } = req.body;
+    const UMoney = await db.query("SELECT cash FROM users where id = $1", [
+      uID,
+    ]);
+    price = Number(UMoney.rows[0].cash) + price;
+    console.log(price, typeof price);
+    await db.query("update users set cash = $1 where id = $2", [price, uID]);
+    await db.query("DELETE FROM public.orders WHERE id = $1", [id]);
+    res.json({ message: "успешно удалено" });
+  } else {
+    var { id, price } = req.body;
+    const UMoney = await db.query("SELECT cash FROM users where id = $1", [
+      userId,
+    ]);
+    price = Number(UMoney.rows[0].cash) + price;
+    console.log(price, typeof price);
+    await db.query("update users set cash = $1 where id = $2", [price, userId]);
+    await db.query("DELETE FROM public.orders WHERE id = $1", [id]);
+    res.json({ message: "успешно удалено" });
+  }
+});
 
 module.exports = router;

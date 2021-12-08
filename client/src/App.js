@@ -6,22 +6,18 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { useAuth } from "./hooks/auth.hook";
 import { useRoutes } from "./routes";
 import { AuthContext } from "./context/authContext";
+import { Loader } from "./components/Loader";
+import AddMoneyModal from "./modals/AddMoney.modal";
 
 function App() {
-  const {
-    token,
-    login,
-    logout,
-    userId,
-    userLogin,
-    ready,
-    isAdmin,
-    getFirstName,
-    getLastName,
-  } = useAuth();
+  const { token, login, logout, userId, userLogin, ready, isAdmin } = useAuth();
   const routes = useRoutes();
   const isAuthent = !!token;
+  console.log(token);
 
+  if (!ready) {
+    return <Loader />;
+  }
   return (
     <AuthContext.Provider
       value={{
@@ -47,6 +43,7 @@ function App() {
             <li className="nav-menu__row_items">
               <RegisterModal />
             </li>
+            <li>{!!token && <AddMoneyModal />}</li>
           </ul>
         </nav>
       </div>
