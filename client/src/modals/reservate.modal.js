@@ -49,8 +49,12 @@ export const ReservateRoomModal = (room) => {
   const [load, setload] = useState(false);
 
   useEffect(() => {
-    setLastName(getLastName(token.userId));
-    setFirstName(getFirstName(token.userId));
+    getLastName(token.userId).then((res) => {
+      setLastName(res);
+    });
+    getFirstName(token.userId).then((res) => {
+      setFirstName(res);
+    });
   }, [setLastName, setFirstName]);
 
   const handleChangeDateStart = (event) => {
