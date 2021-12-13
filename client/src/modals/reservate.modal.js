@@ -170,7 +170,7 @@ export const ReservateRoomModal = (room) => {
 
       {state && (
         <div className="modal">
-          <div className="modal-body">
+          <div className="modal-body-reserve">
             {(!load && (
               <div>
                 <h1>Бронирование номера</h1>
@@ -203,9 +203,9 @@ export const ReservateRoomModal = (room) => {
                   <fieldset>
                     <input
                       name="first_name"
-                      type="first_name"
+                      type="text"
                       placeholder={(!!token.token && firstName) || "Имя"}
-                      defaultValue={!!token.token && firstName}
+                      defaultValue={(!!token.token && firstName) || ""}
                       autoFocus="true"
                       onLoad={changeRegFormHandler}
                       onChange={changeRegFormHandler}
@@ -213,9 +213,9 @@ export const ReservateRoomModal = (room) => {
                     />
                     <input
                       name="last_name"
-                      type="last_name"
+                      type="text"
                       placeholder={(!!token.token && lastName) || "Фамилия"}
-                      defaultValue={!!token.token && lastName}
+                      defaultValue={(!!token.token && lastName) || ""}
                       onLoad={changeRegFormHandler}
                       onChange={changeRegFormHandler}
                       required
@@ -228,14 +228,14 @@ export const ReservateRoomModal = (room) => {
                       }
                       onLoadStart={changeRegFormHandler}
                       onChange={changeRegFormHandler}
-                      required
+                      required={true}
                     />
                     <input
                       name="password"
                       type="password"
                       placeholder="Пароль"
                       onChange={changeRegFormHandler}
-                      required
+                      required={true}
                     />
                     <div>
                       <button onClick={regRoomHandler}>
