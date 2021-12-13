@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import { useMessage } from "../hooks/alert.hook";
-
+import "../modals/AuthPage.module.css";
 import { AuthContext } from "../context/authContext";
 import { BlockRooms } from "../components/BlockRooms";
 
@@ -132,12 +132,12 @@ export const RoomsPage = () => {
   return (
     <>
       <div className="row">
-        <div className="col s3">
+        <div className="col s2">
           <h5>Фильтры</h5>
-          <div className=" col s12">
-            <label>фильтр по размеру комнаты</label>
+          <div className=" col s12 pull-s3">
+            <label className="black-text">фильтр по размеру комнаты</label>
             <select
-              class="browser-default"
+              className="browser-default"
               onChange={ChangeRoomValueFilterhandler}
             >
               <option value="0">Без фильтра</option>
@@ -146,9 +146,12 @@ export const RoomsPage = () => {
               <option value="3">Для трех</option>
             </select>
           </div>
-          <div className=" col s12">
-            <label>фильтр по Корпусу</label>
-            <select class="browser-default" onChange={ChangeRoomBuildHandler}>
+          <div className=" col s12 pull-s3">
+            <label className="black-text">фильтр по Корпусу</label>
+            <select
+              className="browser-default"
+              onChange={ChangeRoomBuildHandler}
+            >
               <option value="">Без фильтра</option>
               <option value="A">Корпус А</option>
               <option value="B">Корпус Б</option>

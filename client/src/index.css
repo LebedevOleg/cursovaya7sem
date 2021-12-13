@@ -1,2 +1,8 @@
 @import "~materialize-css/dist/css/materialize.min.css";
 @import url("https://cdn.syncfusion.com/ej2/material.css");
+html,
+#root,
+#DL-extension-container {
+  background: fixed, url(modals/bg.png), no-repeat;
+  background-attachment: fixed, fixed, fixed;
+}

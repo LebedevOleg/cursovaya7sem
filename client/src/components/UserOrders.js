@@ -47,20 +47,26 @@ export const UserOrders = (order) => {
       <div className="col s6 m6">
         <div
           className={
-            (order.order.status && "card light-blue accent-2") ||
-            "card grey lighten-1"
+            (order.order.status && "card light-blue accent-2 z-depth-4") ||
+            "card grey lighten-1 z-depth-4"
           }
         >
           <div className="card-content black-text">
-            <span className="card-title">Номер заказа: {order.order.id}</span>
+            <span className="card-title" style={{ fontFamily: "Impact" }}>
+              Номер заказа: {order.order.id}
+            </span>
             {!!order.order.first_name && (
               <h6>Имя заказчика: {order.order.first_name}</h6>
             )}
             {!!order.order.last_name && (
               <h6>Имя заказчика: {order.order.last_name}</h6>
             )}
-            <p>Дата заселения: {order.order.date_on}</p>
-            <p>Дата выезда: {order.order.date_out}</p>
+            <p style={{ fontFamily: "Marker Felt", fontSize: "14px" }}>
+              Дата заселения: {Date(order.order.date_on)}
+            </p>
+            <p style={{ fontFamily: "Marker Felt", fontSize: "14px" }}>
+              Дата выезда: {Date(order.order.date_out)}
+            </p>
             <p>
               Номер комнаты: {order.order.room_name} в корпусе{" "}
               {order.order.build}

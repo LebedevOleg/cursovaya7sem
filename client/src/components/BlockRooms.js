@@ -16,16 +16,31 @@ export const BlockRooms = (room) => {
   }, [getBlockDay]);
   return (
     <>
-      <div className="col s6 ">
-        <h2 className="header">Номер комнаты: {room.room.name}</h2>
-        <div className="card horizontal">
-          <div className="card-stacked">
-            <div className="card-content">
-              <p>Размер комнаты: {room.room.size} человека</p>
-            </div>
-            <div className="card-action">
-              <ReservateRoomModal id={room.room} date={blockedDay} />
-            </div>
+      <div className="col s12 ">
+        <link
+          href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet"
+        />
+
+        <div className="card col s12 #e8eaf6 indigo lighten-5 z-depth-3">
+          <div className="card-content">
+            <h4 style={{ fontFamily: "fantasy, Critter" }}>
+              Номер комнаты: {room.room.name}
+              <span className="card-title activator grey-text text-darken-4">
+                <i className="material-icons right">more_vert</i>
+              </span>
+            </h4>
+          </div>
+          <div className="card-action">
+            <ReservateRoomModal id={room.room} date={blockedDay} />
+          </div>
+          <div className="card-reveal">
+            <span className="card-title grey-text text-darken-4">
+              Номер комнаты: {room.room.name}
+              <i className="material-icons right">close</i>
+            </span>
+            <p>Размер комнаты: {room.room.size} человека</p>
+            <p>Цена за день: {room.room.price_for_day}</p>
           </div>
         </div>
       </div>

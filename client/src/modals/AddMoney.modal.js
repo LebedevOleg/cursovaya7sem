@@ -40,7 +40,8 @@ export const AddMoneyModal = () => {
         onClick={() => {
           setState(true);
         }}
-        style={{ cursor: "pointer" }}
+        style={{ cursor: "pointer", fontFamily: "Futura" }}
+        className="black-text"
       >
         Добавить денег на счет
       </a>

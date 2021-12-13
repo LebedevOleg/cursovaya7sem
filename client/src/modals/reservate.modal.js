@@ -22,6 +22,7 @@ export const ReservateRoomModal = (room) => {
         .post("/api/user/getFirstName", { id })
         .then((res) => {
           result = res.data;
+          console.log(res.data);
         });
       return result;
     }
@@ -36,6 +37,7 @@ export const ReservateRoomModal = (room) => {
         .then((res) => {
           result = res.data;
         });
+      console.log(result);
       return result;
     }
   }, []);
@@ -49,9 +51,13 @@ export const ReservateRoomModal = (room) => {
   const [load, setload] = useState(false);
 
   useEffect(() => {
-    setLastName(getLastName(token.userId));
-    setFirstName(getFirstName(token.userId));
-  }, [setLastName, setFirstName]);
+    getLastName(token.userId).then((res) => {
+      setLastName(res);
+    });
+    getFirstName(token.userId).then((res) => {
+      setFirstName(res);
+    });
+  }, [getLastName, getFirstName]);
 
   const handleChangeDateStart = (event) => {
     setFormReg({ ...formReg, [event.element.name]: event.element.value });
@@ -64,8 +70,8 @@ export const ReservateRoomModal = (room) => {
   const [formReg, setFormReg] = useState({
     login: "",
     password: "",
-    first_name: "",
-    last_name: "",
+    first_name: firstName,
+    last_name: lastName,
     date_Start: new Date(),
     date_End: new Date(),
     token: token.token,
@@ -157,7 +163,7 @@ export const ReservateRoomModal = (room) => {
         onClick={() => {
           setState(true);
         }}
-        style={{ cursor: "pointer" }}
+        style={{ cursor: "pointer", fontFamily: " Adobe Poetica" }}
       >
         Забронировать
       </a>
@@ -199,6 +205,7 @@ export const ReservateRoomModal = (room) => {
                       name="first_name"
                       type="first_name"
                       placeholder={(!!token.token && firstName) || "Имя"}
+                      defaultValue={!!token.token && firstName}
                       autoFocus="true"
                       onLoad={changeRegFormHandler}
                       onChange={changeRegFormHandler}
@@ -208,6 +215,7 @@ export const ReservateRoomModal = (room) => {
                       name="last_name"
                       type="last_name"
                       placeholder={(!!token.token && lastName) || "Фамилия"}
+                      defaultValue={!!token.token && lastName}
                       onLoad={changeRegFormHandler}
                       onChange={changeRegFormHandler}
                       required

@@ -1,5 +1,5 @@
 import logo from "./logo.svg";
-import "./App.css";
+import "./index.css";
 import "materialize-css";
 import RegisterModal from "./modals/register.modal";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -31,10 +31,14 @@ function App() {
       }}
     >
       <div className="header__menu">
-        <nav className="nav-menu">
+        <nav className="nav-menu #b388ff deep-purple accent-1">
           <ul className="nav-menu__row right hide-on-med-and-down">
             <li className="nav-menu__row_items">
-              <a href="/rooms" className="nav-menu__row_items_a">
+              <a
+                href="/rooms"
+                style={{ fontFamily: " Adobe Poetica" }}
+                className="nav-menu__row_items_a black-text"
+              >
                 <b>Заказать Номер</b>
               </a>
             </li>
@@ -48,7 +52,7 @@ function App() {
         </nav>
       </div>
       <Router>
-        <div className="container">{routes}</div>
+        <div>{routes}</div>
       </Router>
     </AuthContext.Provider>
   );

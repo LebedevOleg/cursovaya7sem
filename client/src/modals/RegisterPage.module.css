@@ -4,9 +4,9 @@ body {
 }
 
 body {
-  font: 12px "Lucida Sans Unicode", "Trebuchet MS", Arial, Helvetica;
+  font: 12px, Arial, Helvetica;
   margin: 0;
-  background: url(bg.png) repeat;
+  background: fixed, url(bg.png), no-repeat;
 }
 
 /*--------------------*/

@@ -100,7 +100,7 @@ const RegisterModal = () => {
       {(token && (
         <div className="row">
           <a href="/account" className="nav-menu__row_items_a">
-            <b>
+            <b style={{ fontFamily: " Adobe Poetica" }} className="black-text">
               {auth.userLogin} счет: {money}
             </b>
           </a>
