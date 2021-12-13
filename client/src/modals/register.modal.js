@@ -165,7 +165,7 @@ const RegisterModal = () => {
                 <input
                   id={stlReg.password}
                   name="first_name"
-                  type="first_name"
+                  type="text"
                   placeholder="Имя"
                   autoFocus="true"
                   onChange={changeRegFormHandler}
@@ -174,7 +174,7 @@ const RegisterModal = () => {
                 <input
                   id={stlReg.password}
                   name="last_name"
-                  type="last_name"
+                  type="text"
                   placeholder="Фамилия"
                   autoFocus="true"
                   onChange={changeRegFormHandler}

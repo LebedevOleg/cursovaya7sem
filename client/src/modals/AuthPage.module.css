@@ -12,14 +12,8 @@ body {
 /*--------------------*/
 
 #login {
-  background-color: #fff;
-  background-image: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    from(#fff),
-    to(#eee)
-  );
+  background-color: rgb(207, 189, 247);
+
   background-image: -webkit-linear-gradient(top, #fff, #eee);
   background-image: -moz-linear-gradient(top, #fff, #eee);
   background-image: -ms-linear-gradient(top, #fff, #eee);
