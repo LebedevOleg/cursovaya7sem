@@ -98,7 +98,7 @@ router.post("/addUserMoney", auth, async (req, res) => {
   ]);
   money = Number(UMoney.rows[0].cash) + money;
   res.json();
-  await db.query("update users set cash = $1", [money]);
+  await db.query("update users set cash = $1 where id = $2", [money, userId]);
 });
 
 module.exports = router;
