@@ -129,13 +129,24 @@ export const ReservateRoomModal = (room) => {
         var dateOut = new Date(room.date[i].date_out);
         if (
           args.date.getDate() >= dateIn.getDate() &&
-          args.date.getDate() <= dateOut.getDate()
+          args.date.getDate() <= dateOut.getDate() &&
+          args.date.getMonth() == dateIn.getMonth() &&
+          args.date.getMonth() == dateOut.getMonth() &&
+          args.date.getYear() == dateIn.getYear() &&
+          args.date.getYear() == dateOut.getYear()
         ) {
+          args.isDisabled = true;
+        }
+      }
+      if (dateEnd != null) {
+        var date = new Date(dateEnd);
+        if (args.date >= date) {
           args.isDisabled = true;
         }
       }
     }
   };
+
   const onRenderCellEnd = (args) => {
     if (room.date.length != 0) {
       for (var i = 0; i < room.date.length; i++) {
@@ -143,14 +154,18 @@ export const ReservateRoomModal = (room) => {
         var dateOut = new Date(room.date[i].date_out);
         if (
           args.date.getDate() >= dateIn.getDate() &&
-          args.date.getDate() <= dateOut.getDate()
+          args.date.getDate() <= dateOut.getDate() &&
+          args.date.getMonth() == dateIn.getMonth() &&
+          args.date.getMonth() == dateOut.getMonth() &&
+          args.date.getYear() == dateIn.getYear() &&
+          args.date.getYear() == dateOut.getYear()
         ) {
           args.isDisabled = true;
         }
       }
     }
     var date = new Date(dateStart);
-    if (args.date.getDate() <= date.getDate()) {
+    if (args.date <= date) {
       args.isDisabled = true;
     }
   };
