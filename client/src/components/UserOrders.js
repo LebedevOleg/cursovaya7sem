@@ -7,6 +7,8 @@ import ReservateRoomModal from "../modals/reservate.modal";
 export const UserOrders = (order) => {
   const auth = useContext(AuthContext);
   const alert = useMessage();
+  const date_in = new Date(order.order.date_on);
+  const date_out = new Date(order.order.date_out);
   console.log(order.order);
 
   const deleteOrder = async () => {
@@ -36,7 +38,6 @@ export const UserOrders = (order) => {
           { headers: { Authorization: `Bearer ${auth.token}` } }
         )
         .then(async (res) => {
-          alert(res.data.message);
           window.location = "/account";
         });
     }
@@ -62,10 +63,10 @@ export const UserOrders = (order) => {
               <h6>Имя заказчика: {order.order.last_name}</h6>
             )}
             <p style={{ fontFamily: "Marker Felt", fontSize: "14px" }}>
-              Дата заселения: {Date(order.order.date_on)}
+              Дата заселения: {date_in.toString()}
             </p>
             <p style={{ fontFamily: "Marker Felt", fontSize: "14px" }}>
-              Дата выезда: {Date(order.order.date_out)}
+              Дата выезда: {date_out.toString()}
             </p>
             <p>
               Номер комнаты: {order.order.room_name} в корпусе{" "}

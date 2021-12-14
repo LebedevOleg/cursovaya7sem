@@ -45,7 +45,7 @@ export const ReservateRoomModal = (room) => {
   const token = useContext(AuthContext);
   const [state, setState] = useState(false);
   const [dateStart, setDateStart] = useState(new Date());
-  const [dateEnd, setDateEnd] = useState(new Date());
+  const [dateEnd, setDateEnd] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [load, setload] = useState(false);
@@ -70,8 +70,8 @@ export const ReservateRoomModal = (room) => {
   const [formReg, setFormReg] = useState({
     login: "",
     password: "",
-    first_name: firstName,
-    last_name: lastName,
+    first_name: "",
+    last_name: "",
     date_Start: new Date(),
     date_End: new Date(),
     token: token.token,
@@ -90,7 +90,12 @@ export const ReservateRoomModal = (room) => {
         var dateOutRes = new Date(room.date[i].date_out);
         var dateInChoose = new Date(formReg.date_Start);
         var dateOutChoose = new Date(formReg.date_End);
-        if (dateInRes > dateInChoose && dateOutRes < dateOutChoose) {
+        console.log(dateInRes <= dateInChoose && dateOutRes > dateOutChoose);
+        if (
+          (dateInRes > dateInChoose && dateOutRes < dateOutChoose) ||
+          (dateInRes <= dateInChoose && dateOutRes < dateOutChoose)
+        ) {
+          setload(false);
           return alert("Выбранный промежуток пересекает уже существующий");
         }
       }
@@ -102,7 +107,7 @@ export const ReservateRoomModal = (room) => {
         alert("Комната успешно забронированна");
         setload(false);
         setState(false);
-        window.location = "/rooms";
+        //window.location = "/rooms";
       })
       .catch((error) => {
         if (error.response) {
@@ -114,15 +119,6 @@ export const ReservateRoomModal = (room) => {
         }
       });
   };
-  const enabledButton = () => {
-    if (dateStart == dateEnd) {
-      setEnubleButton(true);
-      return true;
-    } else {
-      setEnubleButton(false);
-      return false;
-    }
-  };
 
   const onRenderCellStart = (args) => {
     if (room.date.length != 0) {
@@ -131,13 +127,24 @@ export const ReservateRoomModal = (room) => {
         var dateOut = new Date(room.date[i].date_out);
         if (
           args.date.getDate() >= dateIn.getDate() &&
-          args.date.getDate() <= dateOut.getDate()
+          args.date.getDate() <= dateOut.getDate() &&
+          args.date.getMonth() == dateIn.getMonth() &&
+          args.date.getMonth() == dateOut.getMonth() &&
+          args.date.getYear() == dateIn.getYear() &&
+          args.date.getYear() == dateOut.getYear()
         ) {
+          args.isDisabled = true;
+        }
+      }
+      if (dateEnd != null) {
+        var date = new Date(dateEnd);
+        if (args.date >= date) {
           args.isDisabled = true;
         }
       }
     }
   };
+
   const onRenderCellEnd = (args) => {
     if (room.date.length != 0) {
       for (var i = 0; i < room.date.length; i++) {
@@ -145,14 +152,18 @@ export const ReservateRoomModal = (room) => {
         var dateOut = new Date(room.date[i].date_out);
         if (
           args.date.getDate() >= dateIn.getDate() &&
-          args.date.getDate() <= dateOut.getDate()
+          args.date.getDate() <= dateOut.getDate() &&
+          args.date.getMonth() == dateIn.getMonth() &&
+          args.date.getMonth() == dateOut.getMonth() &&
+          args.date.getYear() == dateIn.getYear() &&
+          args.date.getYear() == dateOut.getYear()
         ) {
           args.isDisabled = true;
         }
       }
     }
     var date = new Date(dateStart);
-    if (args.date.getDate() <= date.getDate()) {
+    if (args.date <= date) {
       args.isDisabled = true;
     }
   };
@@ -205,7 +216,6 @@ export const ReservateRoomModal = (room) => {
                       name="first_name"
                       type="text"
                       placeholder={(!!token.token && firstName) || "Имя"}
-                      defaultValue={(!!token.token && firstName) || ""}
                       autoFocus="true"
                       onLoad={changeRegFormHandler}
                       onChange={changeRegFormHandler}

@@ -52,6 +52,7 @@ router.get("/getUserOrders", auth, async (req, res) => {
     }
     res.status(201).json(orders.rows);
   } catch (e) {
+    console.log(e);
     res.json(e.message);
   }
 });

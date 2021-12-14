@@ -134,7 +134,7 @@ export const RoomsPage = () => {
       <div className="row">
         <div className="col s2">
           <h5>Фильтры</h5>
-          <div className=" col s12">
+          <div className=" col s10">
             <label className="black-text">фильтр по размеру комнаты</label>
             <select
               className="browser-default"
@@ -146,7 +146,7 @@ export const RoomsPage = () => {
               <option value="3">Для трех</option>
             </select>
           </div>
-          <div className=" col s12">
+          <div className=" col s10">
             <label className="black-text">фильтр по Корпусу</label>
             <select
               className="browser-default"
@@ -158,7 +158,7 @@ export const RoomsPage = () => {
             </select>
           </div>
         </div>
-        <div className="col s9">
+        <div className="col s8">
           {rooms.map((room) => (
             <BlockRooms room={room} />
           ))}

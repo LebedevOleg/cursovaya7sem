@@ -16,7 +16,7 @@ export const BlockRooms = (room) => {
   }, [getBlockDay]);
   return (
     <>
-      <div className="col s12 ">
+      <div className="col s12">
         <link
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet"
