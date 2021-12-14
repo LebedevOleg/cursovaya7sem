@@ -88,7 +88,12 @@ export const ReservateRoomModal = (room) => {
         var dateOutRes = new Date(room.date[i].date_out);
         var dateInChoose = new Date(formReg.date_Start);
         var dateOutChoose = new Date(formReg.date_End);
-        if (dateInRes > dateInChoose && dateOutRes < dateOutChoose) {
+        console.log(dateInRes <= dateInChoose && dateOutRes > dateOutChoose);
+        if (
+          (dateInRes > dateInChoose && dateOutRes < dateOutChoose) ||
+          (dateInRes <= dateInChoose && dateOutRes < dateOutChoose)
+        ) {
+          setload(false);
           return alert("Выбранный промежуток пересекает уже существующий");
         }
       }
