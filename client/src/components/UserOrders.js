@@ -47,8 +47,8 @@ export const UserOrders = (order) => {
       <div className="col s6 m6">
         <div
           className={
-            (order.order.status && "card light-blue accent-2 z-depth-4") ||
-            "card grey lighten-1 z-depth-4"
+            (order.order.status && "card purple accent-1 z-depth-4") ||
+            "card cyan accent-1 z-depth-4"
           }
         >
           <div className="card-content black-text">

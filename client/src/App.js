@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./index.css";
 import "materialize-css";
 import RegisterModal from "./modals/register.modal";
@@ -8,6 +7,7 @@ import { useRoutes } from "./routes";
 import { AuthContext } from "./context/authContext";
 import { Loader } from "./components/Loader";
 import AddMoneyModal from "./modals/AddMoney.modal";
+import logo from "./pages/hotel.png";
 
 function App() {
   const { token, login, logout, userId, userLogin, ready, isAdmin } = useAuth();
@@ -49,6 +49,14 @@ function App() {
             </li>
             <li>{!!token && <AddMoneyModal />}</li>
           </ul>
+          <div className="brand-logo center">
+            <img
+              className="logo__image"
+              src={logo}
+              style={{ height: "65px" }}
+              alt="Logo"
+            />
+          </div>
         </nav>
       </div>
       <Router>

@@ -116,6 +116,7 @@ const RegisterModal = () => {
             setLogin(true);
           }}
           style={{ cursor: "pointer" }}
+          className="black-text"
         >
           Вход/Регистрация
         </a>
